@@ -169,3 +169,9 @@ try {
 ## License
 
 See LICENSE file for details.
+
+## Relevant Work
+
+<https://github.com/google/flutter-mediapipe>
+<https://firebase.google.com/docs/ml/flutter/use-custom-models>
+
