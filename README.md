@@ -139,8 +139,8 @@ Contains metadata about a tensor:
 
 ## Requirements
 
-- Flutter SDK >= 2.11.0
-- Dart SDK >= 2.18.0 < 3.0.0
+- Flutter SDK >= 3.0.0
+- Dart SDK >= 3.0.0
 
 ## Development
 
