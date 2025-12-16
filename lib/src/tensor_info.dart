@@ -23,7 +23,7 @@ extension TfLiteTensorPointerExt on Pointer<TfLiteTensor> {
 
     return TensorInfo(
       bytes: ref.bytes,
-      dataTypeCode: ref.type,
+      dataTypeCode: TfLiteType.fromValue(ref.type),
       isVariable: ref.is_variable,
       name: ref.name.toDartString(),
       shape: shape,
@@ -46,8 +46,8 @@ class TensorInfo {
             bytes ~/ shape.reduce((total, element) => total * element);
 
   /// The data type specification for the data stored in the tensor.
-  /// The data type is stored as enum/int in TFLite (known as [dataTypeCode] here).
-  final int dataTypeCode;
+  /// The data type is stored as enum in TFLite (known as [dataTypeCode] here).
+  final TfLiteType dataTypeCode;
   late final String dataTypeName;
   late final int dataTypeSizeInBytes;
 
@@ -80,7 +80,7 @@ class TensorInfo {
 }
 
 /// See note in flutter_tflite_ffi.dart for why we have this map
-const Map<int, String> _tfLiteTypeOf = {
+const Map<TfLiteType, String> _tfLiteTypeOf = {
   TfLiteType.kTfLiteNoType: 'NoType',
   TfLiteType.kTfLiteFloat32: 'Float32',
   TfLiteType.kTfLiteInt32: 'Int32',
@@ -100,6 +100,8 @@ const Map<int, String> _tfLiteTypeOf = {
   TfLiteType.kTfLiteUInt32: 'UInt32',
   TfLiteType.kTfLiteUInt16: 'UInt16',
   TfLiteType.kTfLiteInt4: 'Int4',
+  TfLiteType.kTfLiteBFloat16: 'BFloat16',
+  TfLiteType.kTfLiteInt2: 'Int2',
 };
 
 /// The tensor struct from common.h is below:
