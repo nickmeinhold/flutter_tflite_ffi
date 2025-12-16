@@ -181,14 +181,14 @@ class NativeInterpreter implements Interpreter {
       );
     }
 
-    if (tensor.type == TfLiteType.kTfLiteUInt8) {
+    if (tensor.type == TfLiteType.kTfLiteUInt8.value) {
       final buf = tensor.data.raw.cast<Uint8>();
       final castList = rgbData.asUint8List();
       final numUint8s = rgbData.lengthInBytes;
       for (var i = 0; i < numUint8s; i++) {
         buf[i] = castList[i];
       }
-    } else if (tensor.type == TfLiteType.kTfLiteFloat32) {
+    } else if (tensor.type == TfLiteType.kTfLiteFloat32.value) {
       final buf = tensor.data.raw.cast<Float>();
       final castList = rgbData.asFloat32List();
       final numFloat32s = rgbData.lengthInBytes ~/ 4;
@@ -231,20 +231,23 @@ class NativeInterpreter implements Interpreter {
     }
 
     final List<dynamic> outputData;
+    final tensorType = outputTensor.ref.type;
     if (T == double) {
-      if (outputTensor.ref.type == TfLiteType.kTfLiteFloat32) {
+      if (tensorType == TfLiteType.kTfLiteFloat32.value) {
         final castBuffer = buffer.cast<Float>();
         final numFloat32s = tensorSizeInBytes ~/ 4;
-        outputData = Float32List(tensorSizeInBytes);
+        outputData = Float32List(numFloat32s);
 
         for (var i = 0; i < numFloat32s; i++) {
           outputData[i] = castBuffer[i];
         }
       } else {
-        throw Exception('outputTensor.ref.type was not recognized.');
+        throw Exception(
+          'outputTensor.ref.type $tensorType was not recognized for double output.',
+        );
       }
     } else if (T == int) {
-      if (outputTensor.ref.type == TfLiteType.kTfLiteInt32) {
+      if (tensorType == TfLiteType.kTfLiteInt32.value) {
         final castBuffer = buffer.cast<Int32>();
         final numInt32s = tensorSizeInBytes ~/ 4;
         outputData = Int32List(numInt32s);
@@ -252,8 +255,24 @@ class NativeInterpreter implements Interpreter {
         for (var i = 0; i < numInt32s; i++) {
           outputData[i] = castBuffer[i];
         }
+      } else if (tensorType == TfLiteType.kTfLiteUInt8.value) {
+        final castBuffer = buffer.cast<Uint8>();
+        outputData = Uint8List(tensorSizeInBytes);
+
+        for (var i = 0; i < tensorSizeInBytes; i++) {
+          outputData[i] = castBuffer[i];
+        }
+      } else if (tensorType == TfLiteType.kTfLiteInt8.value) {
+        final castBuffer = buffer.cast<Int8>();
+        outputData = Int8List(tensorSizeInBytes);
+
+        for (var i = 0; i < tensorSizeInBytes; i++) {
+          outputData[i] = castBuffer[i];
+        }
       } else {
-        throw Exception('outputTensor.ref.type was not recognized.');
+        throw Exception(
+          'outputTensor.ref.type $tensorType was not recognized for int output.',
+        );
       }
     } else {
       throw Exception(
